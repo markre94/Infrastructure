@@ -9,7 +9,7 @@ services:
     container_name: jenkins
     ports:
       - 8880:8080
-      - 5000:5000
+      - 50000:50000
     restart: always
     volumes:
       - ./jenkins_controller/jenkins.yml:/usr/share/jenkins/ref/jenkins.yaml
@@ -35,6 +35,30 @@ services:
       - jenkins
     ports:
       - 9000:9000
+    
+    restart: always
+
+  selenium_hub:
+    image: selenium/hub
+    container_name: selenium_hub
+    depends_on:
+      - jenkins
+    ports:
+      - "4442:4442"
+      - "4443:4443"
+      - "4444:4444"
+    
+    restart: always
+
+  selenium_node:
+    image: selenium/node-firefox
+    container_name: selenium_node
+    depends_on:
+      - selenium_hub
+    environment:
+      - SE_EVENT_BUS_HOST=selenium_hub
+      - SE_EVENT_BUS_PUBLISH_PORT=4442
+      - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
     
     restart: always
 
